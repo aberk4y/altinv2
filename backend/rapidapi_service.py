@@ -55,41 +55,106 @@ class RapidAPIService:
             logger.error(f"Error fetching currency rates: {str(e)}")
             return self._get_fallback_currency_data()
     
-    def _format_gold_data(self, data: Dict) -> List[Dict]:
-        """Format gold data from API response"""
-        formatted = []
-        counter = 1
+    def _calculate_turkish_gold_prices(self, gold_price_usd: float, usd_try: float) -> List[Dict]:
+        """Calculate Turkish gold prices from international gold price"""
+        # 1 troy ounce = 31.1035 grams
+        gram_price_try = (gold_price_usd / 31.1035) * usd_try
         
-        gold_mapping = {
-            'has_altin': ('HAS ALTIN', 'PURE GOLD'),
-            'ons': ('ONS', 'OUNCE'),
-            'ceyrek_altin': ('ÇEYREK ALTIN', 'QUARTER GOLD'),
-            'yarim_altin': ('YARIM ALTIN', 'HALF GOLD'),
-            'tam_altin': ('TAM ALTIN', 'FULL GOLD'),
-            'ayar22': ('22 AYAR', '22 CARAT'),
-            'gram_altin': ('GRAM ALTIN', 'GRAM GOLD'),
-            'gumus': ('ALTIN GÜMÜŞ', 'GOLD SILVER'),
-            'resat': ('REŞAT ALTIN', 'RESAT GOLD'),
-            'ata': ('ATA ALTIN', 'ATA GOLD')
-        }
+        # Add 2-3% spread for buy/sell
+        spread = 0.025
         
-        for key, (name_tr, name_en) in gold_mapping.items():
-            if key in data:
-                item_data = data[key]
-                buy = float(item_data.get('alis', 0))
-                sell = float(item_data.get('satis', 0))
-                change = float(item_data.get('degisim', 0))
-                
-                formatted.append({
-                    'id': counter,
-                    'name': name_tr,
-                    'nameEn': name_en,
-                    'buy': buy,
-                    'sell': sell,
-                    'change': change,
-                    'unit': 'TRY'
-                })
-                counter += 1
+        formatted = [
+            {
+                'id': 1,
+                'name': 'HAS ALTIN',
+                'nameEn': 'PURE GOLD',
+                'buy': round(gram_price_try * (1 - spread), 2),
+                'sell': round(gram_price_try * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),  # Compare to base
+                'unit': 'TRY'
+            },
+            {
+                'id': 2,
+                'name': 'ONS',
+                'nameEn': 'OUNCE',
+                'buy': round(gold_price_usd * usd_try * (1 - spread), 2),
+                'sell': round(gold_price_usd * usd_try * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),
+                'unit': 'TRY'
+            },
+            {
+                'id': 3,
+                'name': 'ÇEYREK ALTIN',
+                'nameEn': 'QUARTER GOLD',
+                'buy': round(gram_price_try * 1.75 * (1 - spread), 2),
+                'sell': round(gram_price_try * 1.75 * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),
+                'unit': 'TRY'
+            },
+            {
+                'id': 4,
+                'name': 'YARIM ALTIN',
+                'nameEn': 'HALF GOLD',
+                'buy': round(gram_price_try * 3.5 * (1 - spread), 2),
+                'sell': round(gram_price_try * 3.5 * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),
+                'unit': 'TRY'
+            },
+            {
+                'id': 5,
+                'name': 'TAM ALTIN',
+                'nameEn': 'FULL GOLD',
+                'buy': round(gram_price_try * 7.0 * (1 - spread), 2),
+                'sell': round(gram_price_try * 7.0 * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),
+                'unit': 'TRY'
+            },
+            {
+                'id': 6,
+                'name': '22 AYAR',
+                'nameEn': '22 CARAT',
+                'buy': round(gram_price_try * 0.916 * (1 - spread), 2),
+                'sell': round(gram_price_try * 0.916 * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),
+                'unit': 'TRY'
+            },
+            {
+                'id': 7,
+                'name': 'GRAM ALTIN',
+                'nameEn': 'GRAM GOLD',
+                'buy': round(gram_price_try * (1 - spread), 2),
+                'sell': round(gram_price_try * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),
+                'unit': 'TRY'
+            },
+            {
+                'id': 8,
+                'name': 'ALTIN GÜMÜŞ',
+                'nameEn': 'GOLD SILVER',
+                'buy': round(gram_price_try * 0.012 * (1 - spread), 2),
+                'sell': round(gram_price_try * 0.012 * (1 + spread), 2),
+                'change': 0.5,
+                'unit': 'TRY'
+            },
+            {
+                'id': 9,
+                'name': 'REŞAT ALTIN',
+                'nameEn': 'RESAT GOLD',
+                'buy': round(gram_price_try * 7.2 * (1 - spread), 2),
+                'sell': round(gram_price_try * 7.2 * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),
+                'unit': 'TRY'
+            },
+            {
+                'id': 10,
+                'name': 'ATA ALTIN',
+                'nameEn': 'ATA GOLD',
+                'buy': round(gram_price_try * 7.0 * (1 - spread), 2),
+                'sell': round(gram_price_try * 7.0 * (1 + spread), 2),
+                'change': round((gold_price_usd - 2670) / 2670 * 100, 2),
+                'unit': 'TRY'
+            }
+        ]
         
         return formatted
     
