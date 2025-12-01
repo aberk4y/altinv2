@@ -1,0 +1,127 @@
+import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
+import { mockGoldPrices, mockCurrencies } from '../mock';
+import { TrendingUp, TrendingDown, Search } from 'lucide-react';
+
+const PriceCard = ({ item, language }) => {
+  const name = language === 'tr' ? item.name : item.nameEn;
+  const isPositive = item.change >= 0;
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-semibold text-gray-800 text-sm">{name}</h3>
+        <div className={`flex items-center gap-1 text-xs font-semibold ${
+          isPositive ? 'text-green-600' : 'text-red-600'
+        }`}>
+          {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+          {isPositive ? '+' : ''}{item.change.toFixed(2)}%
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 text-sm">
+        <div>
+          <p className="text-gray-500 text-xs">Alış</p>
+          <p className="font-bold text-gray-900">{item.buy.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+        </div>
+        <div>
+          <p className="text-gray-500 text-xs">Satış</p>
+          <p className="font-bold text-gray-900">{item.sell.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const HomePage = () => {
+  const { t, language } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('gold');
+
+  const filteredGold = mockGoldPrices.filter(item => {
+    const name = language === 'tr' ? item.name : item.nameEn;
+    return name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  const filteredCurrencies = mockCurrencies.filter(item => {
+    const name = language === 'tr' ? item.name : item.nameEn;
+    return name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  return (
+    <div className="pb-20 pt-4">
+      {/* Search Bar */}
+      <div className="px-4 mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder={t('search')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      {/* Category Tabs */}
+      <div className="flex gap-2 px-4 mb-4">
+        <button
+          onClick={() => setActiveCategory('gold')}
+          className={`flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+            activeCategory === 'gold'
+              ? 'bg-yellow-500 text-white shadow-md'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          {t('gold')}
+        </button>
+        <button
+          onClick={() => setActiveCategory('currency')}
+          className={`flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+            activeCategory === 'currency'
+              ? 'bg-yellow-500 text-white shadow-md'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          {t('currency')}
+        </button>
+      </div>
+
+      {/* Price List */}
+      <div className="px-4">
+        {activeCategory === 'gold' && (
+          <div>
+            <h2 className="text-yellow-600 font-bold text-center mb-4 text-sm tracking-wide">
+              {t('goldPrices')}
+            </h2>
+            <div className="space-y-3">
+              {filteredGold.map((item) => (
+                <PriceCard key={item.id} item={item} language={language} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeCategory === 'currency' && (
+          <div>
+            <h2 className="text-yellow-600 font-bold text-center mb-4 text-sm tracking-wide">
+              {t('currencyRates')}
+            </h2>
+            <div className="space-y-3">
+              {filteredCurrencies.map((item) => (
+                <PriceCard key={item.id} item={item} language={language} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Last Update Time */}
+      <div className="text-center mt-6 text-xs text-gray-500">
+        Son Güncelleme: {new Date().toLocaleString('tr-TR')}
+      </div>
+    </div>
+  );
+};
+
+export default HomePage;
