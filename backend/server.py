@@ -9,7 +9,7 @@ from typing import List, Optional
 from datetime import datetime
 
 from models import PortfolioItem, PortfolioItemCreate, PortfolioItemUpdate
-from rapidapi_service import rapidapi_service
+from harem_api_service import harem_api_service
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
