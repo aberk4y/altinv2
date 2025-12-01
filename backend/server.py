@@ -33,17 +33,19 @@ async def root():
 # Get Gold & Currency Prices
 @api_router.get("/prices")
 async def get_prices(type: Optional[str] = "all"):
-    """Get real-time gold and currency prices"""
+    """Get real-time gold and currency prices from Harem Altın API"""
     try:
+        prices_data = harem_api_service.get_all_prices()
+        
         result = {
             "lastUpdate": datetime.utcnow().isoformat()
         }
         
         if type in ["all", "gold"]:
-            result["gold"] = rapidapi_service.get_gold_prices()
+            result["gold"] = prices_data.get("gold", [])
         
         if type in ["all", "currency"]:
-            result["currency"] = rapidapi_service.get_currency_rates()
+            result["currency"] = prices_data.get("currency", [])
         
         return result
     except Exception as e:
