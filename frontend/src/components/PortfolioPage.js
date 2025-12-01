@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { mockPortfolio, mockGoldPrices, mockCurrencies } from '../mock';
-import { Plus, TrendingUp, TrendingDown, Trash2 } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Trash2, Briefcase } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
