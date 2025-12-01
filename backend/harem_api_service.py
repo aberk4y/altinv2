@@ -88,9 +88,9 @@ class HaremAPIService:
         
         for item in raw_data:
             key = item.get('key', '')
-            buy = self._parse_turkish_number(item.get('buy', '0'))
-            sell = self._parse_turkish_number(item.get('sell', '0'))
-            percent = self._parse_turkish_number(item.get('percent', '0'))
+            buy = self._parse_turkish_number(item.get('buy', '0'), is_percent=False)
+            sell = self._parse_turkish_number(item.get('sell', '0'), is_percent=False)
+            percent = self._parse_turkish_number(item.get('percent', '0'), is_percent=True)
             
             # Check if it's a gold item
             if key in gold_mapping:
