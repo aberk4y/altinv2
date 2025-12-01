@@ -12,16 +12,26 @@ class RapidAPIService:
         self.currency_api_url = "https://api.exchangerate-api.com/v4/latest/USD"
     
     def get_gold_prices(self) -> List[Dict]:
-        """Fetch gold prices from RapidAPI"""
+        """Fetch gold prices from free gold API"""
         try:
-            url = f"{self.base_url}/altin"
-            response = requests.get(url, headers=self.headers, timeout=10)
+            # Get international gold price in USD per ounce
+            response = requests.get(self.gold_api_url, timeout=10)
             
             if response.status_code == 200:
-                data = response.json()
-                return self._format_gold_data(data)
+                gold_data = response.json()
+                gold_price_usd = gold_data.get('price', 2700)  # USD per troy ounce
+                
+                # Get USD/TRY exchange rate
+                currency_response = requests.get(self.currency_api_url, timeout=10)
+                usd_try = 34.0  # fallback
+                if currency_response.status_code == 200:
+                    currency_data = currency_response.json()
+                    usd_try = currency_data.get('rates', {}).get('TRY', 34.0)
+                
+                # Calculate Turkish gold prices
+                return self._calculate_turkish_gold_prices(gold_price_usd, usd_try)
             else:
-                logger.error(f"RapidAPI gold prices error: {response.status_code}")
+                logger.error(f"Gold API error: {response.status_code}")
                 return self._get_fallback_gold_data()
         except Exception as e:
             logger.error(f"Error fetching gold prices: {str(e)}")
