@@ -38,16 +38,18 @@ class RapidAPIService:
             return self._get_fallback_gold_data()
     
     def get_currency_rates(self) -> List[Dict]:
-        """Fetch currency rates from RapidAPI"""
+        """Fetch currency rates from free exchange rate API"""
         try:
-            url = f"{self.base_url}/doviz"
-            response = requests.get(url, headers=self.headers, timeout=10)
+            response = requests.get(self.currency_api_url, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
-                return self._format_currency_data(data)
+                rates = data.get('rates', {})
+                try_rate = rates.get('TRY', 34.0)
+                
+                return self._format_currency_from_usd(rates, try_rate)
             else:
-                logger.error(f"RapidAPI currency rates error: {response.status_code}")
+                logger.error(f"Currency API error: {response.status_code}")
                 return self._get_fallback_currency_data()
         except Exception as e:
             logger.error(f"Error fetching currency rates: {str(e)}")
