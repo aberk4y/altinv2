@@ -159,8 +159,18 @@ const HomePage = () => {
 
       {/* Last Update Time */}
       {lastUpdate && (
-        <div className="text-center mt-6 text-xs text-gray-500">
-          Son Güncelleme: {lastUpdate.toLocaleString('tr-TR')}
+        <div className="text-center mt-6 mb-2">
+          <div className="text-xs text-gray-500">
+            Son Güncelleme: {lastUpdate.toLocaleString('tr-TR')}
+          </div>
+          <a 
+            href="https://app.emergent.sh/?utm_source=emergent-badge" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-[9px] text-gray-400 hover:text-gray-500 mt-1 inline-block opacity-50"
+          >
+            Made with Emergent
+          </a>
         </div>
       )}
     </div>
