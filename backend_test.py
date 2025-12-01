@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 # Backend URL from frontend .env
-BASE_URL = "https://harem-altin-clone.preview.emergentagent.com/api"
+BASE_URL = "https://berkayfinance.preview.emergentagent.com/api"
 
 class HaremAltinAPITester:
     def __init__(self):
