@@ -247,7 +247,7 @@ const PortfolioPage = () => {
         ) : (
           <div className="space-y-3">
             {portfolio.map((item) => {
-              const { profit, percentage } = calculateProfit(item);
+              const { profit, percentage, currentPrice } = calculateProfit(item);
               const name = language === 'tr' ? item.name : item.nameEn;
               return (
                 <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
@@ -270,7 +270,7 @@ const PortfolioPage = () => {
                     </div>
                     <div>
                       <p className="text-gray-500">{t('currentPrice')}</p>
-                      <p className="font-semibold">{item.currentPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</p>
+                      <p className="font-semibold">{currentPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺</p>
                     </div>
                   </div>
                   <div className={`mt-3 pt-3 border-t flex items-center justify-between ${
