@@ -1,15 +1,15 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
-import uuid
-from datetime import datetime, timezone
+from typing import List, Optional
+from datetime import datetime
 
+from models import PortfolioItem, PortfolioItemCreate, PortfolioItemUpdate
+from rapidapi_service import rapidapi_service
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,46 +25,91 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
+# Root endpoint
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Harem Altın API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+# Get Gold & Currency Prices
+@api_router.get("/prices")
+async def get_prices(type: Optional[str] = "all"):
+    """Get real-time gold and currency prices"""
+    try:
+        result = {
+            "lastUpdate": datetime.utcnow().isoformat()
+        }
+        
+        if type in ["all", "gold"]:
+            result["gold"] = rapidapi_service.get_gold_prices()
+        
+        if type in ["all", "currency"]:
+            result["currency"] = rapidapi_service.get_currency_rates()
+        
+        return result
+    except Exception as e:
+        logging.error(f"Error fetching prices: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+# Portfolio Management
+@api_router.post("/portfolio", response_model=PortfolioItem)
+async def create_portfolio_item(item: PortfolioItemCreate):
+    """Create new portfolio item"""
+    try:
+        portfolio_item = PortfolioItem(**item.dict())
+        await db.portfolio.insert_one(portfolio_item.dict())
+        return portfolio_item
+    except Exception as e:
+        logging.error(f"Error creating portfolio item: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/portfolio", response_model=List[PortfolioItem])
+async def get_portfolio():
+    """Get all portfolio items"""
+    try:
+        items = await db.portfolio.find({"userId": "default"}).to_list(1000)
+        return [PortfolioItem(**item) for item in items]
+    except Exception as e:
+        logging.error(f"Error fetching portfolio: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/portfolio/{item_id}", response_model=PortfolioItem)
+async def update_portfolio_item(item_id: str, update: PortfolioItemUpdate):
+    """Update portfolio item"""
+    try:
+        update_data = {k: v for k, v in update.dict().items() if v is not None}
+        update_data["updatedAt"] = datetime.utcnow()
+        
+        result = await db.portfolio.find_one_and_update(
+            {"id": item_id, "userId": "default"},
+            {"$set": update_data},
+            return_document=True
+        )
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Portfolio item not found")
+        
+        return PortfolioItem(**result)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error updating portfolio item: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/portfolio/{item_id}")
+async def delete_portfolio_item(item_id: str):
+    """Delete portfolio item"""
+    try:
+        result = await db.portfolio.delete_one({"id": item_id, "userId": "default"})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Portfolio item not found")
+        
+        return {"message": "Portfolio item deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error deleting portfolio item: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Include the router in the main app
 app.include_router(api_router)
