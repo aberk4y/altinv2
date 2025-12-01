@@ -60,8 +60,8 @@ class RapidAPIService:
         # 1 troy ounce = 31.1035 grams
         gram_price_try = (gold_price_usd / 31.1035) * usd_try
         
-        # Add 2-3% spread for buy/sell
-        spread = 0.025
+        # Add realistic Turkish market spread (0.5% for buy/sell)
+        spread = 0.005
         
         formatted = [
             {
