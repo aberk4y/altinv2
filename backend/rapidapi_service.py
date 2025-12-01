@@ -5,16 +5,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-RAPIDAPI_KEY = os.environ.get('RAPIDAPI_KEY', '')
-RAPIDAPI_HOST = "gold-and-foreign-exchange-information-from-turkish-companies.p.rapidapi.com"
-
 class RapidAPIService:
     def __init__(self):
-        self.headers = {
-            "x-rapidapi-key": RAPIDAPI_KEY,
-            "x-rapidapi-host": RAPIDAPI_HOST
-        }
-        self.base_url = f"https://{RAPIDAPI_HOST}"
+        # Using free APIs for gold and currency data
+        self.gold_api_url = "https://api.gold-api.com/price/XAU"
+        self.currency_api_url = "https://api.exchangerate-api.com/v4/latest/USD"
     
     def get_gold_prices(self) -> List[Dict]:
         """Fetch gold prices from RapidAPI"""
