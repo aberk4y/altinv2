@@ -10,10 +10,10 @@ const Header = () => {
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">HA</span>
+            <span className="text-white font-bold text-sm">BA</span>
           </div>
           <h1 className="text-lg font-bold">
-            <span className="text-yellow-600">HAREM</span>
+            <span className="text-yellow-600">BERKAY</span>
             <span className="text-yellow-500">ALTIN</span>
           </h1>
         </div>
