@@ -87,7 +87,7 @@ export const translations = {
     currency: 'Döviz'
   },
   en: {
-    appName: 'Harem Gold',
+    appName: 'Berkay Gold',
     home: 'Home',
     converter: 'Converter',
     portfolio: 'Portfolio',
