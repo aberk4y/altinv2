@@ -110,10 +110,15 @@ async def get_prices(type: Optional[str] = "all"):
         # 1. Fetch real prices (run blocking IO in thread)
         prices_data = await asyncio.to_thread(harem_api_service.get_all_prices)
         
-        # 2. Fetch margins from DB
-        # Convert to dict for O(1) checking: {"GRAM ALTIN": {amount: 5, is_percentage: False}}
-        margins_list = await db.margins.find({}).to_list(1000)
-        margins_map = {m["product_name_key"]: m for m in margins_list}
+        # 2. Fetch margins from DB (Graceful degradation if DB is down)
+        margins_map = {}
+        try:
+            # Convert to dict for O(1) checking: {"GRAM ALTIN": {amount: 5, is_percentage: False}}
+            margins_list = await db.margins.find({}).to_list(1000)
+            margins_map = {m["product_name_key"]: m for m in margins_list}
+        except Exception as db_err:
+            logging.warning(f"Database connection failed, serving prices without margins: {str(db_err)}")
+            # Proceed with empty margins_map
         
         # 3. Apply margins
         def apply_margin(items):
