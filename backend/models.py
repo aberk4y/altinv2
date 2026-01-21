@@ -33,6 +33,8 @@ class User(BaseModel):
 class Margin(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     product_name_key: str # e.g. "GRAM ALTIN" or "USDTRY"
-    margin_amount: float
+    margin_amount: float # Standard margin (spread widening)
+    margin_buy: float = 0.0 # Extra adjustment for Buy Price (+/-)
+    margin_sell: float = 0.0 # Extra adjustment for Sell Price (+/-)
     is_percentage: bool = False
     updated_at: datetime = Field(default_factory=datetime.utcnow)
