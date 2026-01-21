@@ -24,3 +24,15 @@ class PortfolioItem(BaseModel):
 class PortfolioItemUpdate(BaseModel):
     quantity: Optional[float] = None
     buyPrice: Optional[float] = None
+
+class User(BaseModel):
+    username: str
+    hashed_password: str
+    is_active: bool = True
+
+class Margin(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    product_name_key: str # e.g. "GRAM ALTIN" or "USDTRY"
+    margin_amount: float
+    is_percentage: bool = False
+    updated_at: datetime = Field(default_factory=datetime.utcnow)

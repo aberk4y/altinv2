@@ -41,15 +41,21 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(null);
 
+  const [error, setError] = useState(null);
+
   const fetchPrices = async () => {
     setLoading(true);
+    setError(null);
     try {
+      console.log("Fetching prices...");
       const data = await api.getPrices();
+      console.log("Prices received:", data);
       if (data.gold) setGoldPrices(data.gold);
       if (data.currency) setCurrencies(data.currency);
       setLastUpdate(new Date(data.lastUpdate));
-    } catch (error) {
-      console.error('Failed to fetch prices:', error);
+    } catch (err) {
+      console.error('Failed to fetch prices:', err);
+      setError(err.message || "Veri çekme hatası");
     } finally {
       setLoading(false);
     }
@@ -121,7 +127,13 @@ const HomePage = () => {
 
       {/* Price List */}
       <div className="px-4">
-        {loading && goldPrices.length === 0 ? (
+        {error ? (
+          <div className="text-center py-12">
+             <p className="text-red-500 font-bold mb-2">Hata Oluştu</p>
+             <p className="text-gray-600 text-sm">{error}</p>
+             <button onClick={fetchPrices} className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded">Tekrar Dene</button>
+          </div>
+        ) : loading && goldPrices.length === 0 ? (
           <div className="text-center py-12">
             <RefreshCw size={32} className="mx-auto text-yellow-500 animate-spin mb-3" />
             <p className="text-gray-500">Yükleniyor...</p>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { LanguageProvider } from './context/LanguageContext';
 import Header from './components/Header';
@@ -7,22 +8,36 @@ import HomePage from './components/HomePage';
 import ConverterPage from './components/ConverterPage';
 import PortfolioPage from './components/PortfolioPage';
 import { Toaster } from './components/ui/toaster';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 
-function App() {
+const MobileApp = () => {
   const [activeTab, setActiveTab] = useState('home');
 
   return (
+    <div className="App min-h-screen bg-gray-50 pb-20">
+      <Header />
+      <main className="max-w-[480px] mx-auto">
+        {activeTab === 'home' && <HomePage />}
+        {activeTab === 'converter' && <ConverterPage />}
+        {activeTab === 'portfolio' && <PortfolioPage />}
+      </main>
+      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Toaster />
+    </div>
+  );
+};
+
+function App() {
+  return (
     <LanguageProvider>
-      <div className="App min-h-screen bg-gray-50">
-        <Header />
-        <main className="max-w-[480px] mx-auto">
-          {activeTab === 'home' && <HomePage />}
-          {activeTab === 'converter' && <ConverterPage />}
-          {activeTab === 'portfolio' && <PortfolioPage />}
-        </main>
-        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
-        <Toaster />
-      </div>
+      <Router>
+        <Routes>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/*" element={<MobileApp />} />
+        </Routes>
+      </Router>
     </LanguageProvider>
   );
 }

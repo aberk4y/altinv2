@@ -1,0 +1,373 @@
+Dosya çok uzun olduğu için kesildi. Tamamını görmek için devam ediyorum:
+Action: file_editor view /app/PROJE_DETAYLI_DOKUMAN.md
+Observation: /app/PROJE_DETAYLI_DOKUMAN.md:
+2432|- Privacy policy URL: https://berkay-altin.vercel.app/privacy
+2433|- Support URL: https://berkay-altin.vercel.app/support (oluşturulmalı)
+2434|
+2435|**2.10.5: Version Information (1.0)**
+2436|- Screenshots: Upload for all required sizes
+2437|- Description: [Full description EN]
+2438|- Keywords: gold, currency, exchange rate, price, portfolio, finance
+2439|- Promotional text: Track live gold and currency prices in Turkey
+2440|
+2441|**2.10.6: Build Upload (Xcode)**
+2442|```bash
+2443|# Xcode'da:
+2444|# 1. Product → Archive
+2445|# 2. Archives window'da "Distribute App"
+2446|# 3. "App Store Connect" seç
+2447|# 4. Upload
+2448|# 5. Wait for processing (5-30 mins)
+2449|```
+2450|
+2451|**2.10.7: App Review Information**
+2452|- Contact: [email & phone]
+2453|- Demo account: N/A (no login required for main features)
+2454|- Notes: "Admin panel at /admin/login is for internal use only"
+2455|
+2456|**2.10.8: Submit for Review**
+2457|- Review süresi: 1-3 gün (genellikle 24-48 saat)
+2458|
+2459|---
+2460|
+2461|#### GÖREV 2.11: Post-Submission Testing
+2462|**Adımlar:**
+2463|
+2464|**2.11.1: Internal Testing (TestFlight for iOS)**
+2465|- TestFlight invite linki oluştur
+2466|- Beta tester'lara gönder
+2467|- Feedback topla
+2468|
+2469|**2.11.2: Closed Beta (Google Play)**
+2470|- Internal testing track oluştur
+2471|- Tester email listesi ekle
+2472|- Feedback topla
+2473|
+2474|**2.11.3: Bug Fixes (Eğer varsa)**
+2475|- Testte bulunan bug'ları fix et
+2476|- Yeni build upload et
+2477|- Re-test
+2478|
+2479|**2.11.4: Public Release**
+2480|- Google Play: "Publish to Production"
+2481|- Apple: "Release this version"
+2482|
+2483|---
+2484|
+2485|### FAZ 3: POST-LAUNCH & MAINTENANCE
+2486|**Sürekli**
+2487|
+2488|---
+2489|
+2490|#### GÖREV 3.1: Monitoring ve Analytics
+2491|**Adımlar:**
+2492|
+2493|**3.1.1: Backend Monitoring**
+2494|- Heroku logs: `heroku logs --tail`
+2495|- Uptime monitoring: UptimeRobot (ücretsiz)
+2496|- Error tracking: Sentry (opsiyonel)
+2497|
+2498|**3.1.2: App Analytics**
+2499|- Google Analytics for Firebase (ücretsiz)
+2500|- User engagement metrics
+2501|- Crash reporting
+2502|
+2503|**3.1.3: API Usage Tracking**
+2504|- RapidAPI usage limits kontrol
+2505|- MongoDB Atlas usage (free tier: 512 MB)
+2506|
+2507|---
+2508|
+2509|#### GÖREV 3.2: Bug Fixing ve Updates
+2510|**Adımlar:**
+2511|
+2512|**3.2.1: User Feedback Toplama**
+2513|- App Store reviews kontrol
+2514|- Play Store reviews kontrol
+2515|- Email feedback
+2516|
+2517|**3.2.2: Bug Fix Process**
+2518|1. Bug'ı reproduce et
+2519|2. Fix'i implement et
+2520|3. Test et (local + staging)
+2521|4. Version bump: 1.0.0 → 1.0.1
+2522|5. Build new APK/AAB/IPA
+2523|6. Submit to stores
+2524|
+2525|**3.2.3: Feature Updates**
+2526|- User requests değerlendir
+2527|- Priority'ye göre planlama
+2528|- Development cycle: Design → Implement → Test → Deploy
+2529|
+2530|---
+2531|
+2532|#### GÖREV 3.3: API Key Management
+2533|**Adımlar:**
+2534|
+2535|**3.3.1: Key Rotation**
+2536|- RapidAPI key'i düzenli kontrol
+2537|- Expired key durumunda yeni key oluştur
+2538|- Backend .env'i güncelle
+2539|- Redeploy
+2540|
+2541|**3.3.2: MongoDB Backup**
+2542|- MongoDB Atlas auto-backup aktif et
+2543|- Manuel snapshot al (kritik güncellemelerden önce)
+2544|
+2545|---
+2546|
+2547|#### GÖREV 3.4: Cost Management
+2548|**Aylık Maliyetler:**
+2549|
+2550|**Development (One-time):**
+2551|- Emergent credits: ~160 kredi (tamamlandı)
+2552|
+2553|**Hosting:**
+2554|- Backend (Heroku): $0-7/month (Hobby tier)
+2555|- MongoDB Atlas: $0 (free tier, 512 MB)
+2556|- Frontend (Vercel): $0 (free tier)
+2557|
+2558|**Mobile:**
+2559|- Google Play: $25 (one-time)
+2560|- Apple Developer: $99/year
+2561|
+2562|**Toplam Aylık**: ~$5-10 (ilk yıl $100 ekstra Apple için)
+2563|
+2564|---
+2565|
+2566|## TEKNİK DETAYLAR VE ÖZEL NOTLAR
+2567|
+2568|### MongoDB Veritabanı Şeması
+2569|
+2570|#### Collection: `portfolio_items`
+2571|```javascript
+2572|{
+2573|  "id": "550e8400-e29b-41d4-a716-446655440000", // UUID string
+2574|  "name": "Gram Altın",
+2575|  "amount": 10.5,
+2576|  "value": 60000.00,
+2577|  "type": "gold", // veya "currency" (opsiyonel)
+2578|  "created_at": "2025-12-01T10:30:00Z" // (opsiyonel)
+2579|}
+2580|```
+2581|
+2582|#### Collection: `users` (Admin)
+2583|```javascript
+2584|{
+2585|  "username": "admin_berkay",
+2586|  "hashed_password": "$2b$12$...", // bcrypt hash
+2587|  "created_at": "2025-12-01T08:00:00Z",
+2588|  "is_active": true
+2589|}
+2590|```
+2591|
+2592|#### Collection: `margins`
+2593|```javascript
+2594|{
+2595|  "product_id": 1,
+2596|  "product_name": "GRAM ALTIN",
+2597|  "product_name_en": "GRAM GOLD",
+2598|  "margin_percentage": 2.5,
+2599|  "category": "gold", // "gold" veya "currency"
+2600|  "updated_at": "2025-12-01T12:00:00Z",
+2601|  "updated_by": "admin_berkay"
+2602|}
+2603|```
+2604|
+2605|### API Response Formats
+2606|
+2607|#### GET /api/prices
+2608|```json
+2609|{
+2610|  "lastUpdate": "2025-12-01T22:28:31.489116",
+2611|  "gold": [
+2612|    {
+2613|      "id": 1,
+2614|      "name": "GRAM ALTIN",
+2615|      "nameEn": "GRAM GOLD",
+2616|      "buy": 5772.46,
+2617|      "sell": 5869.82,
+2618|      "change": 1.59,
+2619|      "unit": "TRY"
+2620|    }
+2621|  ],
+2622|  "currency": [
+2623|    {
+2624|      "id": 1,
+2625|      "name": "USD",
+2626|      "nameEn": "USD",
+2627|      "buy": 42.3,
+2628|      "sell": 42.72,
+2629|      "change": 1.21,
+2630|      "symbol": "$",
+2631|      "unit": "TRY"
+2632|    }
+2633|  ]
+2634|}
+2635|```
+2636|
+2637|### Environment Variables Reference
+2638|
+2639|#### Backend (.env)
+2640|```bash
+2641|# Database
+2642|MONGO_URL=mongodb://localhost:27017  # Local development
+2643|# MONGO_URL=mongodb+srv://...  # Production (MongoDB Atlas)
+2644|DB_NAME=berkay_altin_db
+2645|
+2646|# RapidAPI
+2647|RAPIDAPI_KEY=1f83e11378msh672d7bb8e29fb22p12e292jsn8d837cffc2b4
+2648|RAPIDAPI_HOST=harem-altin-live-gold-price-data.p.rapidapi.com
+2649|
+2650|# JWT (Production'da değiştirilmeli!)
+2651|JWT_SECRET_KEY=berkay-altin-super-secret-key-2025-change-in-production
+2652|```
+2653|
+2654|#### Frontend (.env)
+2655|```bash
+2656|# Development (localhost backend)
+2657|# REACT_APP_BACKEND_URL=http://localhost:8001
+2658|
+2659|# Production (deployed backend)
+2660|REACT_APP_BACKEND_URL=https://berkay-altin-backend.herokuapp.com
+2661|```
+2662|
+2663|### Critical Commands Reference
+2664|
+2665|#### Supervisor
+2666|```bash
+2667|# Status
+2668|sudo supervisorctl status
+2669|
+2670|# Restart
+2671|sudo supervisorctl restart backend
+2672|sudo supervisorctl restart frontend
+2673|
+2674|# Logs
+2675|tail -n 100 /var/log/supervisor/backend.err.log
+2676|tail -n 100 /var/log/supervisor/frontend.err.log
+2677|```
+2678|
+2679|#### Package Management
+2680|```bash
+2681|# Backend (Python)
+2682|cd /app/backend
+2683|pip install <package>
+2684|pip freeze > requirements.txt
+2685|sudo supervisorctl restart backend
+2686|
+2687|# Frontend (Yarn - NOT npm!)
+2688|cd /app/frontend
+2689|yarn add <package>
+2690|sudo supervisorctl restart frontend
+2691|```
+2692|
+2693|#### Testing
+2694|```bash
+2695|# Backend API
+2696|curl http://localhost:8001/api/prices
+2697|
+2698|# Frontend
+2699|curl http://localhost:3000
+2700|
+2701|# Admin login
+2702|curl -X POST http://localhost:8001/api/admin/login \
+2703|  -H "Content-Type: application/x-www-form-urlencoded" \
+2704|  -d "username=admin&password=pass"
+2705|```
+2706|
+2707|### Known Issues & Workarounds
+2708|
+2709|#### Issue #1: MongoDB ObjectId Serialization
+2710|**Problem**: FastAPI can't serialize MongoDB `_id` field
+2711|**Solution**: Always exclude `_id` in queries:
+2712|```python
+2713|items = await db.collection.find({}, {"_id": 0}).to_list(1000)
+2714|```
+2715|
+2716|#### Issue #2: CORS Errors
+2717|**Problem**: Frontend can't access backend API
+2718|**Solution**: Ensure CORS middleware is configured:
+2719|```python
+2720|app.add_middleware(
+2721|    CORSMiddleware,
+2722|    allow_origins=["*"],  # Production'da spesifik domain olmalı
+2723|    allow_credentials=True,
+2724|    allow_methods=["*"],
+2725|    allow_headers=["*"],
+2726|)
+2727|```
+2728|
+2729|#### Issue #3: Environment Variables Not Loading
+2730|**Problem**: `os.getenv()` returns `None`
+2731|**Solution**: Call `load_dotenv()` BEFORE any imports that use env vars:
+2732|```python
+2733|from dotenv import load_dotenv
+2734|load_dotenv()  # ÖNCE
+2735|
+2736|from harem_api_service import get_harem_prices  # SONRA
+2737|```
+2738|
+2739|### Security Best Practices
+2740|
+2741|#### Production Checklist:
+2742|- [ ] JWT_SECRET_KEY değiştirildi (güçlü, random)
+2743|- [ ] MongoDB Atlas IP whitelist konfigüre edildi
+2744|- [ ] CORS origins spesifik domain'e daraltıldı
+2745|- [ ] Admin panel güçlü şifre kullanıyor
+2746|- [ ] HTTPS aktif (Let's Encrypt)
+2747|- [ ] API rate limiting implementasyonu (opsiyonel)
+2748|- [ ] Sensitive data log'lanmıyor
+2749|
+2750|### Performance Optimization
+2751|
+2752|#### Backend:
+2753|- MongoDB connection pooling (Motor default)
+2754|- Async/await kullanımı (FastAPI best practice)
+2755|- Response caching (opsiyonel, 30 saniye TTL)
+2756|
+2757|#### Frontend:
+2758|- React.memo for expensive components
+2759|- Lazy loading for routes
+2760|- Image optimization (WebP format)
+2761|- Bundle size minimize (code splitting)
+2762|
+2763|### Capacitor Specific Notes
+2764|
+2765|#### Deep Links (Opsiyonel)
+2766|Eğer ileride web'den mobil app'e yönlendirme gerekirse:
+2767|```json
+2768|// capacitor.config.json
+2769|{
+2770|  "plugins": {
+2771|    "AppUrlOpen": {
+2772|      "url": "berkayaltin://",
+2773|      "androidScheme": "https",
+2774|      "iosSchemeName": "berkayaltin"
+2775|    }
+2776|  }
+2777|}
+2778|```
+2779|
+2780|#### Push Notifications (Gelecek Feature)
+2781|```bash
+2782|yarn add @capacitor/push-notifications
+2783|```
+2784|
+2785|---
+2786|
+2787|## SONUÇ
+2788|
+2789|Bu doküman, BERKAY ALTIN projesinin baştan sona tüm teknik detaylarını içermektedir. 
+2790|
+2791|**Mevcut Durum**: ✅ Faz 0 (Core Development) tamamlandı
+2792|**Sonraki Adım**: 🔴 Faz 1 (Admin Panel & Deployment) başlamalı
+2793|
+2794|**Kullanıcıdan Beklenen Bilgiler:**
+2795|1. Kar marjı yüzdeleri (her ürün için)
+2796|2. Admin panel kullanıcı adı ve şifresi
+2797|3. Logo/Splash screen tasarımı (opsiyonel, önerilebilir)
+2798|
+2799|
+2806|**GitHub**: https://github.com/aberk4y/berkay-altin
+2807|

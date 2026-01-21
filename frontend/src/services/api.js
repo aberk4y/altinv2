@@ -1,60 +1,62 @@
+
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const api = axios.create({
+  baseURL: process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001/api',
+});
 
-export const api = {
-  // Get prices
-  getPrices: async (type = 'all') => {
-    try {
-      const response = await axios.get(`${API}/prices`, {
-        params: { type }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching prices:', error);
-      throw error;
+// Request interceptor to add token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
   },
+  (error) => Promise.reject(error)
+);
 
-  // Portfolio operations
-  getPortfolio: async () => {
-    try {
-      const response = await axios.get(`${API}/portfolio`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching portfolio:', error);
-      throw error;
+// Response interceptor to handle 401
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('token');
+      if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
+        window.location.href = '/admin/login';
+      }
     }
-  },
-
-  createPortfolioItem: async (item) => {
-    try {
-      const response = await axios.post(`${API}/portfolio`, item);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating portfolio item:', error);
-      throw error;
-    }
-  },
-
-  updatePortfolioItem: async (id, item) => {
-    try {
-      const response = await axios.put(`${API}/portfolio/${id}`, item);
-      return response.data;
-    } catch (error) {
-      console.error('Error updating portfolio item:', error);
-      throw error;
-    }
-  },
-
-  deletePortfolioItem: async (id) => {
-    try {
-      const response = await axios.delete(`${API}/portfolio/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error deleting portfolio item:', error);
-      throw error;
-    }
+    return Promise.reject(error);
   }
+);
+
+export const login = async (username, password) => {
+  const formData = new FormData();
+  formData.append('username', username);
+  formData.append('password', password);
+  const response = await api.post('/admin/login', formData);
+  if (response.data.access_token) {
+    localStorage.setItem('token', response.data.access_token);
+  }
+  return response.data;
 };
+
+export const getMargins = async () => {
+  const response = await api.get('/margins');
+  return response.data;
+};
+
+// Helper methods attached to api object for compatibility
+api.getPrices = async (type = 'all') => {
+  const response = await api.get(`/prices?type=${type}`);
+  return response.data;
+};
+
+export const updateMargin = async (marginData) => {
+  const response = await api.post('/margins', marginData);
+  return response.data;
+};
+
+export { api };
+export default api;
