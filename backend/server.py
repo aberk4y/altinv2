@@ -247,6 +247,28 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Static Files (React App)
+# Must be AFTER API routes
+if os.path.exists("../frontend/build"):
+    from fastapi.staticfiles import StaticFiles
+    from fastapi.responses import FileResponse
+
+    # Mount static assets
+    app.mount("/static", StaticFiles(directory="../frontend/build/static"), name="static")
+    
+    # Catch-all for React Router
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        # API requests are already handled above by api_router
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="API endpoint not found")
+            
+        file_path = f"../frontend/build/{full_path}"
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            return FileResponse(file_path)
+            
+        return FileResponse("../frontend/build/index.html")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
