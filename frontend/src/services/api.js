@@ -23,8 +23,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
-      if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
-        window.location.href = '/admin/login';
+      if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/adminyonetim_log_tr') {
+        window.location.href = '/adminyonetim_log_tr';
       }
     }
     return Promise.reject(error);

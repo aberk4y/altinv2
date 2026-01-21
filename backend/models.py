@@ -37,4 +37,5 @@ class Margin(BaseModel):
     margin_buy: float = 0.0 # Extra adjustment for Buy Price (+/-)
     margin_sell: float = 0.0 # Extra adjustment for Sell Price (+/-)
     is_percentage: bool = False
+    is_visible: bool = True # Show/Hide product on user frontend
     updated_at: datetime = Field(default_factory=datetime.utcnow)

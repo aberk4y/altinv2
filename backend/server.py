@@ -94,6 +94,7 @@ async def get_margins(current_user: User = Depends(get_current_user)):
 @api_router.post("/margins", response_model=Margin)
 async def update_margin(margin: Margin, current_user: User = Depends(get_current_user)):
     # Update if exists, insert if not
+    print(f"DEBUG: Updating margin for {margin.product_name_key}. Data: {margin.dict()}")
     await db.margins.update_one(
         {"product_name_key": margin.product_name_key},
         {"$set": margin.dict(exclude={"id"})},
@@ -152,11 +153,11 @@ async def get_prices(type: Optional[str] = "all"):
         
         if type in ["all", "gold"]:
             gold_items = prices_data.get("gold", [])
-            result["gold"] = apply_margin(gold_items)
+            result["gold"] = process_items(gold_items)
         
         if type in ["all", "currency"]:
             currency_items = prices_data.get("currency", [])
-            result["currency"] = apply_margin(currency_items)
+            result["currency"] = process_items(currency_items)
         
         return result
     except Exception as e:

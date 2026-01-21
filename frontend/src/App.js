@@ -28,13 +28,29 @@ const MobileApp = () => {
   );
 };
 
+// Auth Guard Component
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <AdminLogin />;
+  }
+  return children;
+};
+
 function App() {
   return (
     <LanguageProvider>
       <Router>
         <Routes>
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/adminyonetim_log_tr" element={<AdminLogin />} />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/*" element={<MobileApp />} />
         </Routes>
       </Router>
