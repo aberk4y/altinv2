@@ -47,16 +47,9 @@ const AdminDashboard = () => {
     const m = margins.find((i) => i.product_name_key === key);
     return m ? m.is_percentage : false;
   };
-  const getIsVisible = (key) => {
-    const m = margins.find((i) => i.product_name_key === key);
-    if (m) {
-      // If field is missing or null, default to true. False is only if explicitly false.
-      return (m.is_visible !== undefined && m.is_visible !== null) ? m.is_visible : true;
-    }
-    return true; // No margin record yet -> Visible
-  };
 
-  const handleCreateOrUpdate = async (key, amount, amountBuy, amountSell, isPercent, isVisible) => {
+
+  const handleCreateOrUpdate = async (key, amount, amountBuy, amountSell, isPercent) => {
     setSaving(key);
     try {
       let numAmount = parseFloat(amount); if (isNaN(numAmount)) numAmount = 0;
@@ -68,8 +61,7 @@ const AdminDashboard = () => {
         margin_amount: numAmount,
         margin_buy: numBuy,
         margin_sell: numSell,
-        is_percentage: isPercent,
-        is_visible: isVisible
+        is_percentage: isPercent
       });
       await fetchMargins(); // Refresh to ensure sync
     } catch (error) {
@@ -151,41 +143,23 @@ const AdminDashboard = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                       <div className="flex items-center gap-2">
-                         <input 
-                           type="checkbox" 
-                           id={`check-${product.key}`}
-                           defaultChecked={getIsPercentage(product.key)}
-                           className="w-4 h-4 rounded border-gray-600 text-yellow-500 focus:ring-yellow-500 bg-gray-800"
-                         />
-                         <label htmlFor={`check-${product.key}`} className="text-xs text-gray-300">% (Yüzde)</label>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                         <input 
-                           type="checkbox" 
-                           id={`visible-${product.key}`}
-                           defaultChecked={getIsVisible(product.key)}
-                           className="w-4 h-4 rounded border-gray-600 text-blue-500 focus:ring-blue-500 bg-gray-800"
-                         />
-                         <label htmlFor={`visible-${product.key}`} className="text-xs text-gray-300">Yayında</label>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`check-${product.key}`}
+                        defaultChecked={getIsPercentage(product.key)}
+                        className="w-4 h-4 rounded border-gray-600 text-yellow-500 focus:ring-yellow-500 bg-gray-800"
+                      />
+                      <label htmlFor={`check-${product.key}`} className="text-xs text-gray-300">Tüm değerleri % olarak uygula</label>
                     </div>
 
                     <button
                       onClick={() => {
-                        try {
-                          const valMargin = document.getElementById(`input-margin-${product.key}`).value;
-                          const valBuy = document.getElementById(`input-buy-${product.key}`).value;
-                          const valSell = document.getElementById(`input-sell-${product.key}`).value;
-                          const isPerc = document.getElementById(`check-${product.key}`).checked;
-                          const isVis = document.getElementById(`visible-${product.key}`).checked;
-                          handleCreateOrUpdate(product.key, valMargin, valBuy, valSell, isPerc, isVis);
-                        } catch (err) {
-                          console.error("Button Error:", err);
-                          alert("Bir hata oluştu: " + err.message);
-                        }
+                        const valMargin = document.getElementById(`input-margin-${product.key}`).value;
+                        const valBuy = document.getElementById(`input-buy-${product.key}`).value;
+                        const valSell = document.getElementById(`input-sell-${product.key}`).value;
+                        const isPerc = document.getElementById(`check-${product.key}`).checked;
+                        handleCreateOrUpdate(product.key, valMargin, valBuy, valSell, isPerc);
                       }}
                       disabled={saving === product.key}
                       className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition disabled:opacity-50 text-sm"
