@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BERKAY ALTIN</string>
+    <string name="title_activity_main">BERKAY ALTIN</string>
+    <string name="package_name">com.berkayaltin.app</string>
+    <string name="custom_url_scheme">com.berkayaltin.app</string>
+</resources>
