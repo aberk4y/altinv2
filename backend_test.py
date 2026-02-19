@@ -451,8 +451,8 @@ class HaremAltinAPITester:
         except Exception as e:
             self.log_test("Response Times", False, f"Exception: {str(e)}")
             return False
-        """Test portfolio creation with invalid data"""
-        try:
+    
+    def test_invalid_portfolio_creation(self) -> bool:
             # Test with invalid type
             invalid_data = {
                 "type": "invalid_type",
