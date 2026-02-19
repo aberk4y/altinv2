@@ -21,8 +21,8 @@ const BottomNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-      <div className="flex justify-around items-center h-16 max-w-md mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200/50 shadow-lg z-50">
+      <div className="flex justify-around items-center h-20 max-w-md mx-auto px-4">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const IconComponent = item.icon;
@@ -30,14 +30,22 @@ const BottomNav = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+              className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-200 rounded-xl ${
                 isActive
-                  ? 'text-[#1e3a2f] bg-yellow-50'
-                  : 'text-gray-500 hover:text-[#1e3a2f]'
+                  ? 'text-yellow-500 -translate-y-1'
+                  : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              <IconComponent size={24} className="mb-1" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <IconComponent 
+                size={26} 
+                strokeWidth={isActive ? 2.5 : 2}
+                className="mb-1" 
+              />
+              <span className={`text-xs font-medium ${
+                isActive ? 'text-yellow-500' : 'text-gray-500'
+              }`}>
+                {item.label}
+              </span>
             </Link>
           );
         })}
