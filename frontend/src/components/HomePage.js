@@ -123,10 +123,10 @@ const HomePage = () => {
         </button>
         <button
           onClick={() => setActiveCategory('currency')}
-          className={`flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+          className={`flex-1 py-3 rounded-2xl font-semibold text-sm transition-all shadow-sm ${
             activeCategory === 'currency'
-              ? 'bg-yellow-500 text-white shadow-md'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-yellow-400 text-gray-800 shadow-md'
+              : 'bg-white text-gray-600 hover:bg-gray-50'
           }`}
         >
           {t('currency')}
@@ -136,21 +136,21 @@ const HomePage = () => {
       {/* Price List */}
       <div className="px-4">
         {error ? (
-          <div className="text-center py-12">
+          <div className="bg-white rounded-3xl p-8 text-center shadow-sm">
              <p className="text-red-500 font-bold mb-2">Hata Oluştu</p>
-             <p className="text-gray-600 text-sm">{error}</p>
-             <button onClick={fetchPrices} className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded">Tekrar Dene</button>
+             <p className="text-gray-600 text-sm mb-4">{error}</p>
+             <button onClick={fetchPrices} className="bg-yellow-400 text-gray-800 px-6 py-3 rounded-2xl font-semibold hover:bg-yellow-500 transition-all">Tekrar Dene</button>
           </div>
         ) : loading && goldPrices.length === 0 ? (
           <div className="text-center py-12">
-            <RefreshCw size={32} className="mx-auto text-yellow-500 animate-spin mb-3" />
+            <RefreshCw size={32} className="mx-auto text-yellow-400 animate-spin mb-3" />
             <p className="text-gray-500">Yükleniyor...</p>
           </div>
         ) : (
           <>
             {activeCategory === 'gold' && (
               <div>
-                <h2 className="text-yellow-600 font-bold text-center mb-4 text-sm tracking-wide">
+                <h2 className="text-gray-700 font-semibold text-center mb-4 text-sm">
                   {t('goldPrices')}
                 </h2>
                 <div className="space-y-3">
