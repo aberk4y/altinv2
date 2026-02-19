@@ -991,8 +991,8 @@ class AslanoğluKuyumculukSecurityTester:
 
 def main():
     """Main test execution"""
-    tester = HaremAltinAPITester()
-    success = tester.run_all_tests()
+    tester = AslanoğluKuyumculukSecurityTester()
+    success = tester.run_comprehensive_security_tests()
     
     if not success:
         exit(1)
