@@ -8,24 +8,24 @@ const PriceCard = ({ item, language }) => {
   const isPositive = item.change >= 0;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold text-gray-800 text-sm">{name}</h3>
-        <div className={`flex items-center gap-1 text-xs font-semibold ${
-          isPositive ? 'text-green-600' : 'text-red-600'
+    <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all border border-gray-100">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-semibold text-gray-800 text-base">{name}</h3>
+        <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
+          isPositive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
         }`}>
           {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
           {isPositive ? '+' : ''}{item.change.toFixed(2)}%
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        <div>
-          <p className="text-gray-500 text-xs">Alış</p>
-          <p className="font-bold text-gray-900">{item.buy.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="bg-gray-50 rounded-xl p-3">
+          <p className="text-gray-500 text-xs mb-1">Alış</p>
+          <p className="font-bold text-gray-900">{item.buy.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺</p>
         </div>
-        <div>
-          <p className="text-gray-500 text-xs">Satış</p>
-          <p className="font-bold text-gray-900">{item.sell.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+        <div className="bg-gray-50 rounded-xl p-3">
+          <p className="text-gray-500 text-xs mb-1">Satış</p>
+          <p className="font-bold text-gray-900">{item.sell.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₺</p>
         </div>
       </div>
     </div>
