@@ -187,10 +187,18 @@ async def get_prices(request: Request, type: Optional[str] = "all"):
 
 # Portfolio Management
 @api_router.post("/portfolio", response_model=PortfolioItem)
-async def create_portfolio_item(item: PortfolioItemCreate):
-    """Create new portfolio item"""
+@limiter.limit("10/minute")  # Rate limit for portfolio creation
+async def create_portfolio_item(request: Request, item: PortfolioItemCreate):
+    """Create new portfolio item with XSS protection"""
     try:
-        portfolio_item = PortfolioItem(**item.dict())
+        # Sanitize inputs to prevent XSS
+        sanitized_data = item.dict()
+        if 'name' in sanitized_data and sanitized_data['name']:
+            sanitized_data['name'] = html.escape(str(sanitized_data['name']))
+        if 'nameEn' in sanitized_data and sanitized_data['nameEn']:
+            sanitized_data['nameEn'] = html.escape(str(sanitized_data['nameEn']))
+        
+        portfolio_item = PortfolioItem(**sanitized_data)
         await db.portfolio.insert_one(portfolio_item.dict())
         return portfolio_item
     except Exception as e:
