@@ -80,23 +80,31 @@ const HomePage = () => {
 
   return (
     <div className="pb-20 pt-4">
-      {/* Search Bar */}
+      {/* Search Bar with Language Toggle */}
       <div className="px-4 mb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder={t('search')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-          />
+        <div className="flex gap-2 mb-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder={t('search')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+            />
+            <button
+              onClick={fetchPrices}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              disabled={loading}
+            >
+              <RefreshCw size={16} className={`text-gray-600 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
           <button
-            onClick={fetchPrices}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            disabled={loading}
+            onClick={toggleLanguage}
+            className="px-4 py-2.5 rounded-lg bg-[#1e3a2f] text-yellow-400 font-semibold hover:bg-[#2d5a3d] transition-colors"
           >
-            <RefreshCw size={16} className={`text-gray-600 ${loading ? 'animate-spin' : ''}`} />
+            {language.toUpperCase()}
           </button>
         </div>
       </div>
