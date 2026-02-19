@@ -366,7 +366,9 @@ class HaremAltinAPITester:
                 "password": "wrong_password"
             }
             
-            response = self.session.post(f"{self.base_url}/admin/login", data=login_data)
+            # OAuth2PasswordRequestForm expects form data, not JSON
+            response = self.session.post(f"{self.base_url}/admin/login", data=login_data, 
+                                       headers={'Content-Type': 'application/x-www-form-urlencoded'})
             if response.status_code == 401:
                 self.log_test("Admin Login (Wrong Credentials)", True, "Correctly rejected invalid credentials")
                 return True
