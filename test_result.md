@@ -189,6 +189,18 @@ backend:
           agent: "testing"
           comment: "✅ Data validation working correctly. Invalid portfolio type properly rejected with 422 status. Pydantic models enforcing proper data structure. Error handling for database operations implemented."
 
+  - task: "Comprehensive security and performance testing"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL SECURITY ISSUES FOUND: 1) CORS policy allows all origins (*) - major production security risk allowing any website to make requests. 2) XSS vulnerability in portfolio creation - script tags returned unescaped in API responses. 3) No rate limiting implemented - vulnerable to DoS attacks. 4) Performance issues: API responses averaging 1.5s due to external RapidAPI 10s timeouts. ✅ Authentication, JWT validation, SQL injection protection working correctly. ✅ All 14 gold + 11 currency items verified with Turkish character support. REQUIRES IMMEDIATE SECURITY FIXES before production."
+
 frontend:
   - task: "Homepage with BERKAY ALTIN branding and price display"
     implemented: true
