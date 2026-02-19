@@ -1,8 +1,7 @@
 {
-  "appId": "com.berkayaltin.app",
-  "appName": "BERKAY ALTIN",
+  "appId": "com.aslanoglu.kuyumculuk",
+  "appName": "Aslanoğlu Kuyumculuk",
   "webDir": "build",
-  "bundledWebRuntime": false,
   "server": {
     "androidScheme": "https"
   },
