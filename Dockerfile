@@ -27,4 +27,7 @@ COPY --from=build-frontend /app/frontend/build ./frontend/build
 EXPOSE 8000
 
 # Run FastAPI
-CMD ["uvicorn", "backend.server:app", "--host", "0.0.0.0", "--port", "8000"]
+WORKDIR /app/backend
+
+# Run FastAPI
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
