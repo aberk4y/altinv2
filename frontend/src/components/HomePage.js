@@ -79,22 +79,22 @@ const HomePage = () => {
   });
 
   return (
-    <div className="pb-20 pt-4">
+    <div className="pb-24 pt-2 bg-gray-50 min-h-screen">
       {/* Search Bar with Language Toggle */}
       <div className="px-4 mb-4">
         <div className="flex gap-2 mb-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
               placeholder={t('search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent shadow-sm transition-all"
             />
             <button
               onClick={fetchPrices}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-xl transition-colors"
               disabled={loading}
             >
               <RefreshCw size={16} className={`text-gray-600 ${loading ? 'animate-spin' : ''}`} />
@@ -102,7 +102,7 @@ const HomePage = () => {
           </div>
           <button
             onClick={toggleLanguage}
-            className="px-4 py-2.5 rounded-lg bg-[#1e3a2f] text-yellow-400 font-semibold hover:bg-[#2d5a3d] transition-colors"
+            className="px-4 py-3 rounded-2xl bg-yellow-400 text-gray-800 font-semibold hover:bg-yellow-500 transition-all shadow-sm"
           >
             {language.toUpperCase()}
           </button>
@@ -110,13 +110,13 @@ const HomePage = () => {
       </div>
 
       {/* Category Tabs */}
-      <div className="flex gap-2 px-4 mb-4">
+      <div className="flex gap-3 px-4 mb-4">
         <button
           onClick={() => setActiveCategory('gold')}
-          className={`flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+          className={`flex-1 py-3 rounded-2xl font-semibold text-sm transition-all shadow-sm ${
             activeCategory === 'gold'
-              ? 'bg-yellow-500 text-white shadow-md'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-yellow-400 text-gray-800 shadow-md'
+              : 'bg-white text-gray-600 hover:bg-gray-50'
           }`}
         >
           {t('gold')}
