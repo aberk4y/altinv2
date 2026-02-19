@@ -121,12 +121,21 @@ async def get_prices(type: Optional[str] = "all"):
             logging.warning(f"Database connection failed, serving prices without margins: {str(db_err)}")
             # Proceed with empty margins_map
         
-        # 3. Apply margins
-        def apply_margin(items):
+        # 3. Apply margins and filter visibility
+        def process_items(items):
+            """Apply margins and filter based on visibility"""
+            processed = []
             for item in items:
                 key = item.get("name") # "GRAM ALTIN"
+                
+                # Check visibility first
                 if key in margins_map:
                     margin_data = margins_map[key]
+                    # If product is hidden, skip it
+                    if not margin_data.get("is_visible", True):
+                        continue
+                    
+                    # Apply margin
                     amount = margin_data["margin_amount"]
                     is_percent = margin_data.get("is_percentage", False)
                     
@@ -145,7 +154,9 @@ async def get_prices(type: Optional[str] = "all"):
                     # Rounding
                     item["buy"] = round(item["buy"], 2)
                     item["sell"] = round(item["sell"], 2)
-            return items
+                
+                processed.append(item)
+            return processed
 
         result = {
             "lastUpdate": datetime.utcnow().isoformat()
