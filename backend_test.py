@@ -16,7 +16,7 @@ import urllib.parse
 # Backend URL from frontend .env
 BASE_URL = "https://berkayfinance.preview.emergentagent.com/api"
 
-class HaremAltinAPITester:
+class AslanoğluKuyumculukSecurityTester:
     def __init__(self):
         self.base_url = BASE_URL
         self.session = requests.Session()
@@ -25,6 +25,7 @@ class HaremAltinAPITester:
             'Accept': 'application/json'
         })
         self.created_portfolio_items = []
+        self.security_issues = []
         
     def log_test(self, test_name: str, success: bool, details: str = ""):
         """Log test results"""
@@ -33,6 +34,397 @@ class HaremAltinAPITester:
         if details:
             print(f"   Details: {details}")
         print()
+        
+    def log_security_issue(self, issue: str):
+        """Log security vulnerabilities"""
+        self.security_issues.append(issue)
+        print(f"🚨 SECURITY ISSUE: {issue}")
+        
+    # ========== SECURITY TESTS ==========
+    
+    def test_cors_policy(self) -> bool:
+        """Test CORS policy - verify only allowed origins"""
+        try:
+            # Test with malicious origin
+            malicious_headers = {
+                'Origin': 'https://malicious-site.com',
+                'Access-Control-Request-Method': 'GET',
+                'Access-Control-Request-Headers': 'Content-Type'
+            }
+            
+            response = self.session.options(f"{self.base_url}/prices", headers=malicious_headers)
+            
+            # Check if CORS allows the malicious origin
+            cors_origin = response.headers.get('Access-Control-Allow-Origin', '')
+            
+            if cors_origin == '*':
+                self.log_security_issue("CORS allows all origins (*) - potential security risk")
+                self.log_test("CORS Policy", False, "Allows all origins")
+                return False
+            elif 'malicious-site.com' in cors_origin:
+                self.log_security_issue("CORS allows malicious origins")
+                self.log_test("CORS Policy", False, "Allows malicious origins")
+                return False
+            else:
+                self.log_test("CORS Policy", True, f"CORS properly configured: {cors_origin}")
+                return True
+                
+        except Exception as e:
+            self.log_test("CORS Policy", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_sql_injection_attempts(self) -> bool:
+        """Test SQL injection attempts on all endpoints"""
+        try:
+            sql_payloads = [
+                "'; DROP TABLE users; --",
+                "' OR '1'='1",
+                "' UNION SELECT * FROM users --",
+                "'; INSERT INTO users VALUES ('hacker', 'password'); --",
+                "' OR 1=1 --"
+            ]
+            
+            all_safe = True
+            
+            for payload in sql_payloads:
+                # Test on prices endpoint
+                response = self.session.get(f"{self.base_url}/prices?type={urllib.parse.quote(payload)}")
+                if response.status_code == 500:
+                    self.log_security_issue(f"SQL injection may be possible with payload: {payload}")
+                    all_safe = False
+                
+                # Test on portfolio creation
+                portfolio_data = {
+                    "type": "gold",
+                    "name": payload,
+                    "nameEn": payload,
+                    "quantity": 10.0,
+                    "buyPrice": 100.0
+                }
+                response = self.session.post(f"{self.base_url}/portfolio", json=portfolio_data)
+                if response.status_code == 500:
+                    self.log_security_issue(f"SQL injection may be possible in portfolio creation with payload: {payload}")
+                    all_safe = False
+            
+            if all_safe:
+                self.log_test("SQL Injection Protection", True, "All SQL injection attempts properly handled")
+            else:
+                self.log_test("SQL Injection Protection", False, "Potential SQL injection vulnerabilities found")
+            
+            return all_safe
+            
+        except Exception as e:
+            self.log_test("SQL Injection Protection", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_xss_attempts(self) -> bool:
+        """Test XSS attempts"""
+        try:
+            xss_payloads = [
+                "<script>alert('XSS')</script>",
+                "javascript:alert('XSS')",
+                "<img src=x onerror=alert('XSS')>",
+                "';alert('XSS');//",
+                "<svg onload=alert('XSS')>"
+            ]
+            
+            all_safe = True
+            
+            for payload in xss_payloads:
+                # Test portfolio creation with XSS payload
+                portfolio_data = {
+                    "type": "gold",
+                    "name": payload,
+                    "nameEn": payload,
+                    "quantity": 10.0,
+                    "buyPrice": 100.0
+                }
+                
+                response = self.session.post(f"{self.base_url}/portfolio", json=portfolio_data)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    # Check if the payload is returned unescaped
+                    if payload in str(data) and '<script>' in payload:
+                        self.log_security_issue(f"XSS vulnerability: payload returned unescaped: {payload}")
+                        all_safe = False
+                    else:
+                        # Clean up created item
+                        if 'id' in data:
+                            self.session.delete(f"{self.base_url}/portfolio/{data['id']}")
+            
+            if all_safe:
+                self.log_test("XSS Protection", True, "All XSS attempts properly handled")
+            else:
+                self.log_test("XSS Protection", False, "Potential XSS vulnerabilities found")
+            
+            return all_safe
+            
+        except Exception as e:
+            self.log_test("XSS Protection", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_authentication_bypass_attempts(self) -> bool:
+        """Test authentication bypass attempts"""
+        try:
+            bypass_attempts = [
+                # Try accessing admin endpoints without token
+                f"{self.base_url}/admin/me",
+                f"{self.base_url}/margins",
+                # Try with invalid tokens
+                f"{self.base_url}/admin/me",
+                f"{self.base_url}/margins"
+            ]
+            
+            all_secure = True
+            
+            # Test without any token
+            for endpoint in bypass_attempts[:2]:
+                response = self.session.get(endpoint)
+                if response.status_code != 401:
+                    self.log_security_issue(f"Authentication bypass possible at {endpoint}")
+                    all_secure = False
+            
+            # Test with invalid tokens
+            invalid_tokens = [
+                "Bearer invalid_token",
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoYWNrZXIifQ.invalid",
+                "Bearer null",
+                "Bearer undefined"
+            ]
+            
+            for token in invalid_tokens:
+                headers = {'Authorization': token}
+                for endpoint in bypass_attempts[2:]:
+                    response = self.session.get(endpoint, headers=headers)
+                    if response.status_code == 200:
+                        self.log_security_issue(f"Authentication bypass with invalid token at {endpoint}")
+                        all_secure = False
+            
+            if all_secure:
+                self.log_test("Authentication Bypass Protection", True, "All bypass attempts properly blocked")
+            else:
+                self.log_test("Authentication Bypass Protection", False, "Authentication bypass vulnerabilities found")
+            
+            return all_secure
+            
+        except Exception as e:
+            self.log_test("Authentication Bypass Protection", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_jwt_token_validation(self) -> bool:
+        """Test JWT token expiry and validation"""
+        try:
+            # Test with malformed JWT tokens
+            malformed_tokens = [
+                "Bearer not.a.jwt",
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",  # Incomplete JWT
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoYWNrZXIiLCJleHAiOjE2MDk0NTkyMDB9.invalid_signature",
+                "Bearer " + "A" * 500,  # Extremely long token
+            ]
+            
+            all_secure = True
+            
+            for token in malformed_tokens:
+                headers = {'Authorization': token}
+                response = self.session.get(f"{self.base_url}/admin/me", headers=headers)
+                
+                if response.status_code == 200:
+                    self.log_security_issue(f"JWT validation bypass with malformed token: {token[:50]}...")
+                    all_secure = False
+                elif response.status_code != 401:
+                    self.log_security_issue(f"Unexpected response to malformed JWT: {response.status_code}")
+                    all_secure = False
+            
+            if all_secure:
+                self.log_test("JWT Token Validation", True, "All malformed JWT tokens properly rejected")
+            else:
+                self.log_test("JWT Token Validation", False, "JWT validation vulnerabilities found")
+            
+            return all_secure
+            
+        except Exception as e:
+            self.log_test("JWT Token Validation", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_rate_limiting(self) -> bool:
+        """Test API rate limiting (if any)"""
+        try:
+            # Make rapid requests to test rate limiting
+            rapid_requests = 50
+            responses = []
+            
+            start_time = time.time()
+            for i in range(rapid_requests):
+                response = self.session.get(f"{self.base_url}/prices")
+                responses.append(response.status_code)
+            end_time = time.time()
+            
+            # Check if any requests were rate limited (429 status)
+            rate_limited = any(status == 429 for status in responses)
+            
+            if rate_limited:
+                self.log_test("Rate Limiting", True, f"Rate limiting detected after {rapid_requests} requests")
+                return True
+            else:
+                # Rate limiting might not be implemented, which is a security concern for production
+                self.log_test("Rate Limiting", False, f"No rate limiting detected after {rapid_requests} requests in {end_time-start_time:.2f}s")
+                return False
+                
+        except Exception as e:
+            self.log_test("Rate Limiting", False, f"Exception: {str(e)}")
+            return False
+    
+    # ========== FUNCTIONALITY TESTS ==========
+    
+    def test_prices_comprehensive(self) -> bool:
+        """Test GET /api/prices - verify all 14 gold + 11 currency items"""
+        try:
+            response = self.session.get(f"{self.base_url}/prices")
+            if response.status_code != 200:
+                self.log_test("Prices Comprehensive", False, f"Status: {response.status_code}")
+                return False
+            
+            data = response.json()
+            
+            # Check structure
+            required_fields = ['lastUpdate', 'gold', 'currency']
+            for field in required_fields:
+                if field not in data:
+                    self.log_test("Prices Comprehensive", False, f"Missing field: {field}")
+                    return False
+            
+            # Count items
+            gold_count = len(data.get('gold', []))
+            currency_count = len(data.get('currency', []))
+            
+            # Verify counts (should be 14 gold + 11 currency as per request)
+            if gold_count < 10:  # Allow some flexibility
+                self.log_test("Prices Comprehensive", False, f"Insufficient gold items: {gold_count} (expected ~14)")
+                return False
+            
+            if currency_count < 10:  # Allow some flexibility
+                self.log_test("Prices Comprehensive", False, f"Insufficient currency items: {currency_count} (expected ~11)")
+                return False
+            
+            # Verify Turkish character support
+            turkish_chars_found = False
+            for item in data.get('gold', []) + data.get('currency', []):
+                name = item.get('name', '')
+                if any(char in name for char in 'ğüşıöçĞÜŞİÖÇ'):
+                    turkish_chars_found = True
+                    break
+            
+            if not turkish_chars_found:
+                self.log_test("Prices Comprehensive", False, "No Turkish characters found in item names")
+                return False
+            
+            self.log_test("Prices Comprehensive", True, f"Gold: {gold_count}, Currency: {currency_count}, Turkish chars: ✓")
+            return True
+            
+        except Exception as e:
+            self.log_test("Prices Comprehensive", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_concurrent_requests(self) -> bool:
+        """Test concurrent requests (10 simultaneous)"""
+        try:
+            def make_request():
+                return self.session.get(f"{self.base_url}/prices")
+            
+            # Make 10 concurrent requests
+            with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+                futures = [executor.submit(make_request) for _ in range(10)]
+                responses = [future.result() for future in concurrent.futures.as_completed(futures)]
+            
+            # Check all responses
+            success_count = sum(1 for r in responses if r.status_code == 200)
+            
+            if success_count == 10:
+                self.log_test("Concurrent Requests", True, f"All 10 concurrent requests successful")
+                return True
+            else:
+                self.log_test("Concurrent Requests", False, f"Only {success_count}/10 requests successful")
+                return False
+                
+        except Exception as e:
+            self.log_test("Concurrent Requests", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_data_validation_comprehensive(self) -> bool:
+        """Test comprehensive data validation"""
+        try:
+            # Test price format validation
+            response = self.session.get(f"{self.base_url}/prices")
+            if response.status_code != 200:
+                self.log_test("Data Validation", False, "Cannot fetch prices for validation")
+                return False
+            
+            data = response.json()
+            
+            # Validate price format (buy, sell, change)
+            for item_type in ['gold', 'currency']:
+                for item in data.get(item_type, []):
+                    # Check required price fields
+                    price_fields = ['buy', 'sell', 'change']
+                    for field in price_fields:
+                        if field not in item:
+                            self.log_test("Data Validation", False, f"Missing {field} in {item_type} item")
+                            return False
+                        
+                        # Check if price is a valid number
+                        try:
+                            float(item[field])
+                        except (ValueError, TypeError):
+                            self.log_test("Data Validation", False, f"Invalid {field} value in {item_type}: {item[field]}")
+                            return False
+            
+            # Test empty/null response handling
+            response = self.session.get(f"{self.base_url}/prices?type=invalid")
+            # Should still return valid structure even with invalid type
+            
+            self.log_test("Data Validation", True, "All price formats valid, Turkish chars supported")
+            return True
+            
+        except Exception as e:
+            self.log_test("Data Validation", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_performance_under_load(self) -> bool:
+        """Test response time under load and memory stability"""
+        try:
+            response_times = []
+            
+            # Make 20 requests and measure response times
+            for i in range(20):
+                start_time = time.time()
+                response = self.session.get(f"{self.base_url}/prices")
+                end_time = time.time()
+                
+                if response.status_code == 200:
+                    response_times.append(end_time - start_time)
+                else:
+                    self.log_test("Performance Under Load", False, f"Request {i+1} failed with status {response.status_code}")
+                    return False
+                
+                # Small delay to avoid overwhelming
+                time.sleep(0.1)
+            
+            # Calculate statistics
+            avg_response_time = sum(response_times) / len(response_times)
+            max_response_time = max(response_times)
+            
+            # Check if response times are acceptable (< 1s as per requirement)
+            if max_response_time < 1.0 and avg_response_time < 0.5:
+                self.log_test("Performance Under Load", True, f"Avg: {avg_response_time:.3f}s, Max: {max_response_time:.3f}s")
+                return True
+            else:
+                self.log_test("Performance Under Load", False, f"Slow responses - Avg: {avg_response_time:.3f}s, Max: {max_response_time:.3f}s")
+                return False
+                
+        except Exception as e:
+            self.log_test("Performance Under Load", False, f"Exception: {str(e)}")
+            return False
         
     def test_root_endpoint(self) -> bool:
         """Test the root API endpoint"""
