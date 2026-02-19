@@ -114,7 +114,8 @@ async def update_margin(margin: Margin, current_user: User = Depends(get_current
 
 # --- PRICES (WITH MARGINS) ---
 @api_router.get("/prices")
-async def get_prices(type: Optional[str] = "all"):
+@limiter.limit("30/minute")  # Rate limit: 30 requests per minute
+async def get_prices(request: Request, type: Optional[str] = "all"):
     """Get real-time gold and currency prices from Harem Altın API with Margins Applied"""
     try:
         # 1. Fetch real prices (run blocking IO in thread)
