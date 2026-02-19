@@ -37,7 +37,7 @@ class HaremAltinAPITester:
             response = self.session.get(f"{self.base_url}/")
             if response.status_code == 200:
                 data = response.json()
-                if data.get("message") == "Harem Altın API":
+                if data.get("message") == "Berkay Altın API":
                     self.log_test("Root Endpoint", True, f"Response: {data}")
                     return True
                 else:
