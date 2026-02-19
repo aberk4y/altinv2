@@ -515,6 +515,17 @@ class HaremAltinAPITester:
         # Test validation
         test_results['invalid_creation'] = self.test_invalid_portfolio_creation()
         
+        # Test admin authentication (should fail without proper credentials)
+        test_results['admin_wrong_credentials'] = self.test_admin_login_wrong_credentials()
+        test_results['admin_no_token'] = self.test_admin_endpoints_without_token()
+        test_results['margins_no_token'] = self.test_margins_endpoint_without_token()
+        
+        # Test edge cases
+        test_results['nonexistent_portfolio'] = self.test_nonexistent_portfolio_operations()
+        
+        # Test performance
+        test_results['response_times'] = self.test_response_times()
+        
         # Summary
         print("=" * 60)
         print("TEST SUMMARY")
