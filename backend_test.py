@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend API Tests for Harem Altın Application
-Tests all backend endpoints including RapidAPI integration and portfolio management
+Comprehensive Security and Functionality Tests for ASLANOĞLU KUYUMCULUK (BERKAY ALTIN)
+Tests all backend endpoints with focus on security vulnerabilities and performance
 """
 
 import requests
 import json
 import time
+import threading
+import concurrent.futures
 from datetime import datetime
 from typing import Dict, List, Optional
+import urllib.parse
 
 # Backend URL from frontend .env
 BASE_URL = "https://berkayfinance.preview.emergentagent.com/api"
