@@ -33,7 +33,7 @@ const PriceCard = ({ item, language }) => {
 };
 
 const HomePage = () => {
-  const { t, language } = useLanguage();
+  const { t, language, toggleLanguage } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('gold');
   const [goldPrices, setGoldPrices] = useState([]);
