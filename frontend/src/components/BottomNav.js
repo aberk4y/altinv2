@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { Home, RefreshCcw } from 'lucide-react';
 
 const BottomNav = () => {
   const location = useLocation();
@@ -10,17 +11,12 @@ const BottomNav = () => {
     { 
       path: '/', 
       label: language === 'tr' ? 'Ana Sayfa' : 'Home',
-      icon: '🏠'
+      icon: Home
     },
     { 
       path: '/converter', 
       label: language === 'tr' ? 'Çevirici' : 'Converter',
-      icon: '🔄'
-    },
-    { 
-      path: '/portfolio', 
-      label: language === 'tr' ? 'Portföy' : 'Portfolio',
-      icon: '💼'
+      icon: RefreshCcw
     }
   ];
 
@@ -29,6 +25,7 @@ const BottomNav = () => {
       <div className="flex justify-around items-center h-16 max-w-md mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
+          const IconComponent = item.icon;
           return (
             <Link
               key={item.path}
@@ -39,7 +36,7 @@ const BottomNav = () => {
                   : 'text-gray-500 hover:text-[#1e3a2f]'
               }`}
             >
-              <span className="text-2xl mb-1">{item.icon}</span>
+              <IconComponent size={24} className="mb-1" />
               <span className="text-xs font-medium">{item.label}</span>
             </Link>
           );

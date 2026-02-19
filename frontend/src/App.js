@@ -6,24 +6,22 @@ import Header from './components/Header';
 import BottomNav from './components/BottomNav';
 import HomePage from './components/HomePage';
 import ConverterPage from './components/ConverterPage';
-import PortfolioPage from './components/PortfolioPage';
 import SplashScreen from './components/SplashScreen';
 import { Toaster } from './components/ui/toaster';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 
 const MobileApp = () => {
-  const [activeTab, setActiveTab] = useState('home');
-
   return (
     <div className="App min-h-screen bg-gray-50 pb-20">
       <Header />
       <main className="max-w-[480px] mx-auto">
-        {activeTab === 'home' && <HomePage />}
-        {activeTab === 'converter' && <ConverterPage />}
-        {activeTab === 'portfolio' && <PortfolioPage />}
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/converter" element={<ConverterPage />} />
+        </Routes>
       </main>
-      <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+      <BottomNav />
       <Toaster />
     </div>
   );
