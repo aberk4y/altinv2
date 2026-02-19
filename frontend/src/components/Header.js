@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { Globe } from 'lucide-react';
+import { Globe, Search } from 'lucide-react';
 
 const Header = () => {
   const { language, toggleLanguage, t } = useLanguage();
@@ -16,22 +16,31 @@ const Header = () => {
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col justify-center items-start">
             <h1 className="text-lg font-bold text-yellow-400 leading-tight">
               ASLANOĞLU
             </h1>
-            <p className="text-xs text-yellow-200">
+            <p className="text-xs text-yellow-200 leading-tight">
               Kuyumculuk
             </p>
           </div>
         </div>
-        <button
-          onClick={toggleLanguage}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-yellow-400 hover:bg-yellow-500 transition-colors"
-        >
-          <Globe size={16} className="text-[#1e3a2f]" />
-          <span className="text-sm font-semibold text-[#1e3a2f]">{language.toUpperCase()}</span>
-        </button>
+        
+        <div className="flex items-center gap-2">
+          <button
+            className="p-2 rounded-lg bg-yellow-400 hover:bg-yellow-500 transition-colors"
+            aria-label="Arama"
+          >
+            <Search size={18} className="text-[#1e3a2f]" />
+          </button>
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-yellow-400 hover:bg-yellow-500 transition-colors"
+          >
+            <Globe size={14} className="text-[#1e3a2f]" />
+            <span className="text-xs font-semibold text-[#1e3a2f]">{language.toUpperCase()}</span>
+          </button>
+        </div>
       </div>
     </header>
   );
