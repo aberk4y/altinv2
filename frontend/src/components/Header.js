@@ -6,23 +6,31 @@ const Header = () => {
   const { language, toggleLanguage, t } = useLanguage();
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-[#1e3a2f] to-[#2d5a3d] shadow-lg">
       <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">BA</span>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-yellow-400 shadow-md">
+            <img 
+              src="/logo.jpg" 
+              alt="Aslanoğlu Logo" 
+              className="w-full h-full object-cover"
+            />
           </div>
-          <h1 className="text-lg font-bold">
-            <span className="text-yellow-600">BERKAY</span>
-            <span className="text-yellow-500">ALTIN</span>
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-lg font-bold text-yellow-400 leading-tight">
+              ASLANOĞLU
+            </h1>
+            <p className="text-xs text-yellow-200">
+              Kuyumculuk
+            </p>
+          </div>
         </div>
         <button
           onClick={toggleLanguage}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-yellow-400 hover:bg-yellow-500 transition-colors"
         >
-          <Globe size={16} />
-          <span className="text-sm font-semibold">{language.toUpperCase()}</span>
+          <Globe size={16} className="text-[#1e3a2f]" />
+          <span className="text-sm font-semibold text-[#1e3a2f]">{language.toUpperCase()}</span>
         </button>
       </div>
     </header>
