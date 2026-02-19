@@ -38,12 +38,27 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [dataPreloaded, setDataPreloaded] = useState(false);
 
   useEffect(() => {
-    // Show splash screen for 2 seconds
+    // Preload data during splash screen
+    const preloadData = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || '/api'}/prices?type=all`);
+        if (response.ok) {
+          setDataPreloaded(true);
+        }
+      } catch (err) {
+        console.error('Preload failed:', err);
+      }
+    };
+
+    preloadData();
+
+    // Show splash screen for 1.5 seconds (reduced from 2)
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2000);
+    }, 1500);
     
     return () => clearTimeout(timer);
   }, []);
