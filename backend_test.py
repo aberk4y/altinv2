@@ -453,6 +453,8 @@ class HaremAltinAPITester:
             return False
     
     def test_invalid_portfolio_creation(self) -> bool:
+        """Test portfolio creation with invalid data"""
+        try:
             # Test with invalid type
             invalid_data = {
                 "type": "invalid_type",
