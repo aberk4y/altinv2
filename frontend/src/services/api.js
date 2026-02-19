@@ -53,6 +53,21 @@ api.getPrices = async (type = 'all') => {
   return response.data;
 };
 
+api.getPortfolio = async () => {
+  const response = await api.get('/portfolio');
+  return response.data;
+};
+
+api.createPortfolioItem = async (itemData) => {
+  const response = await api.post('/portfolio', itemData);
+  return response.data;
+};
+
+api.deletePortfolioItem = async (id) => {
+  const response = await api.delete(`/portfolio/${id}`);
+  return response.data;
+};
+
 export const updateMargin = async (marginData) => {
   const response = await api.post('/margins', marginData);
   return response.data;
