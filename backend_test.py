@@ -358,7 +358,99 @@ class HaremAltinAPITester:
             self.log_test("Delete Portfolio", False, f"Exception: {str(e)}")
             return False
     
-    def test_invalid_portfolio_creation(self) -> bool:
+    def test_admin_login_wrong_credentials(self) -> bool:
+        """Test POST /api/admin/login with wrong credentials (expect 401)"""
+        try:
+            login_data = {
+                "username": "wrong_user",
+                "password": "wrong_password"
+            }
+            
+            response = self.session.post(f"{self.base_url}/admin/login", data=login_data)
+            if response.status_code == 401:
+                self.log_test("Admin Login (Wrong Credentials)", True, "Correctly rejected invalid credentials")
+                return True
+            else:
+                self.log_test("Admin Login (Wrong Credentials)", False, f"Expected 401, got {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Admin Login (Wrong Credentials)", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_admin_endpoints_without_token(self) -> bool:
+        """Test admin endpoints without authentication token"""
+        try:
+            # Test /admin/me without token
+            response = self.session.get(f"{self.base_url}/admin/me")
+            if response.status_code == 401:
+                self.log_test("Admin Endpoints (No Token)", True, "Correctly rejected request without token")
+                return True
+            else:
+                self.log_test("Admin Endpoints (No Token)", False, f"Expected 401, got {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Admin Endpoints (No Token)", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_margins_endpoint_without_token(self) -> bool:
+        """Test margins endpoint without authentication token"""
+        try:
+            response = self.session.get(f"{self.base_url}/margins")
+            if response.status_code == 401:
+                self.log_test("Margins Endpoint (No Token)", True, "Correctly rejected request without token")
+                return True
+            else:
+                self.log_test("Margins Endpoint (No Token)", False, f"Expected 401, got {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Margins Endpoint (No Token)", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_nonexistent_portfolio_operations(self) -> bool:
+        """Test operations on non-existent portfolio items"""
+        try:
+            fake_id = "non-existent-id-12345"
+            
+            # Test update non-existent item
+            update_data = {"quantity": 10.0}
+            response = self.session.put(f"{self.base_url}/portfolio/{fake_id}", json=update_data)
+            if response.status_code != 404:
+                self.log_test("Non-existent Portfolio Operations", False, f"Update: Expected 404, got {response.status_code}")
+                return False
+            
+            # Test delete non-existent item
+            response = self.session.delete(f"{self.base_url}/portfolio/{fake_id}")
+            if response.status_code != 404:
+                self.log_test("Non-existent Portfolio Operations", False, f"Delete: Expected 404, got {response.status_code}")
+                return False
+            
+            self.log_test("Non-existent Portfolio Operations", True, "Correctly handled non-existent items")
+            return True
+        except Exception as e:
+            self.log_test("Non-existent Portfolio Operations", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_response_times(self) -> bool:
+        """Test that response times are under 1 second"""
+        try:
+            start_time = time.time()
+            response = self.session.get(f"{self.base_url}/prices")
+            end_time = time.time()
+            
+            response_time = end_time - start_time
+            
+            if response.status_code == 200 and response_time < 1.0:
+                self.log_test("Response Times", True, f"Prices API responded in {response_time:.3f}s")
+                return True
+            elif response_time >= 1.0:
+                self.log_test("Response Times", False, f"Prices API took {response_time:.3f}s (>1s)")
+                return False
+            else:
+                self.log_test("Response Times", False, f"API error: {response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Response Times", False, f"Exception: {str(e)}")
+            return False
         """Test portfolio creation with invalid data"""
         try:
             # Test with invalid type
