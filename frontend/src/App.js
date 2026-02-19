@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { LanguageProvider } from './context/LanguageContext';
@@ -7,6 +7,7 @@ import BottomNav from './components/BottomNav';
 import HomePage from './components/HomePage';
 import ConverterPage from './components/ConverterPage';
 import PortfolioPage from './components/PortfolioPage';
+import SplashScreen from './components/SplashScreen';
 import { Toaster } from './components/ui/toaster';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
