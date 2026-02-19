@@ -23,6 +23,9 @@ from models import PortfolioItem, PortfolioItemCreate, PortfolioItemUpdate, User
 from harem_api_service import harem_api_service
 from auth_service import create_access_token, verify_password, ACCESS_TOKEN_EXPIRE_MINUTES
 
+# Rate limiting setup
+limiter = Limiter(key_func=get_remote_address)
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
@@ -30,6 +33,8 @@ db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Auth config
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/admin/login")
