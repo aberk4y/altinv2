@@ -872,25 +872,46 @@ class AslanoğluKuyumculukSecurityTester:
             self.log_test("Invalid Portfolio Creation", False, f"Exception: {str(e)}")
             return False
     
-    def run_all_tests(self):
-        """Run all backend API tests"""
-        print("=" * 60)
-        print("HAREM ALTIN BACKEND API TESTS")
-        print("=" * 60)
+    def run_comprehensive_security_tests(self):
+        """Run comprehensive security and functionality tests"""
+        print("=" * 80)
+        print("ASLANOĞLU KUYUMCULUK (BERKAY ALTIN) - COMPREHENSIVE SECURITY TESTS")
+        print("=" * 80)
         print(f"Testing against: {self.base_url}")
         print()
         
         test_results = {}
         
-        # Test root endpoint
-        test_results['root'] = self.test_root_endpoint()
+        # ========== SECURITY TESTS ==========
+        print("🔒 SECURITY TESTS")
+        print("-" * 40)
         
-        # Test prices API
+        test_results['cors_policy'] = self.test_cors_policy()
+        test_results['sql_injection'] = self.test_sql_injection_attempts()
+        test_results['xss_protection'] = self.test_xss_attempts()
+        test_results['auth_bypass'] = self.test_authentication_bypass_attempts()
+        test_results['jwt_validation'] = self.test_jwt_token_validation()
+        test_results['rate_limiting'] = self.test_rate_limiting()
+        
+        # ========== FUNCTIONALITY TESTS ==========
+        print("⚙️  FUNCTIONALITY TESTS")
+        print("-" * 40)
+        
+        test_results['prices_comprehensive'] = self.test_prices_comprehensive()
+        test_results['concurrent_requests'] = self.test_concurrent_requests()
+        test_results['data_validation'] = self.test_data_validation_comprehensive()
+        test_results['performance_load'] = self.test_performance_under_load()
+        
+        # ========== BASIC API TESTS ==========
+        print("🔧 BASIC API TESTS")
+        print("-" * 40)
+        
+        test_results['root'] = self.test_root_endpoint()
         test_results['prices_all'] = self.test_prices_all()
         test_results['prices_gold'] = self.test_prices_gold_only()
         test_results['prices_currency'] = self.test_prices_currency_only()
         
-        # Test portfolio management
+        # Portfolio tests
         gold_item_id = self.test_create_portfolio_gold()
         test_results['create_gold'] = gold_item_id is not None
         
@@ -899,7 +920,6 @@ class AslanoğluKuyumculukSecurityTester:
         
         test_results['get_portfolio'] = self.test_get_portfolio()
         
-        # Test update and delete if we have items
         if gold_item_id:
             test_results['update_portfolio'] = self.test_update_portfolio(gold_item_id)
             test_results['delete_portfolio'] = self.test_delete_portfolio(gold_item_id)
@@ -907,44 +927,66 @@ class AslanoğluKuyumculukSecurityTester:
             test_results['update_portfolio'] = False
             test_results['delete_portfolio'] = False
         
-        # Clean up remaining items
+        # Clean up
         if currency_item_id:
             self.test_delete_portfolio(currency_item_id)
         
-        # Test validation
+        # Additional validation tests
         test_results['invalid_creation'] = self.test_invalid_portfolio_creation()
-        
-        # Test admin authentication (should fail without proper credentials)
         test_results['admin_wrong_credentials'] = self.test_admin_login_wrong_credentials()
         test_results['admin_no_token'] = self.test_admin_endpoints_without_token()
         test_results['margins_no_token'] = self.test_margins_endpoint_without_token()
-        
-        # Test edge cases
         test_results['nonexistent_portfolio'] = self.test_nonexistent_portfolio_operations()
-        
-        # Test performance
         test_results['response_times'] = self.test_response_times()
         
-        # Summary
-        print("=" * 60)
-        print("TEST SUMMARY")
-        print("=" * 60)
+        # ========== RESULTS SUMMARY ==========
+        print("=" * 80)
+        print("🔍 SECURITY & FUNCTIONALITY TEST SUMMARY")
+        print("=" * 80)
         
-        passed = sum(1 for result in test_results.values() if result)
-        total = len(test_results)
+        # Security results
+        security_tests = ['cors_policy', 'sql_injection', 'xss_protection', 'auth_bypass', 'jwt_validation', 'rate_limiting']
+        security_passed = sum(1 for test in security_tests if test_results.get(test, False))
         
-        for test_name, result in test_results.items():
-            status = "✅ PASS" if result else "❌ FAIL"
-            print(f"{status} {test_name}")
+        print(f"🔒 SECURITY TESTS: {security_passed}/{len(security_tests)} passed")
+        for test in security_tests:
+            status = "✅" if test_results.get(test, False) else "❌"
+            print(f"   {status} {test.replace('_', ' ').title()}")
         
-        print()
-        print(f"OVERALL RESULT: {passed}/{total} tests passed")
+        # Functionality results
+        functionality_tests = ['prices_comprehensive', 'concurrent_requests', 'data_validation', 'performance_load']
+        functionality_passed = sum(1 for test in functionality_tests if test_results.get(test, False))
         
-        if passed == total:
-            print("🎉 ALL TESTS PASSED!")
+        print(f"\n⚙️  FUNCTIONALITY TESTS: {functionality_passed}/{len(functionality_tests)} passed")
+        for test in functionality_tests:
+            status = "✅" if test_results.get(test, False) else "❌"
+            print(f"   {status} {test.replace('_', ' ').title()}")
+        
+        # API tests
+        api_tests = [k for k in test_results.keys() if k not in security_tests + functionality_tests]
+        api_passed = sum(1 for test in api_tests if test_results.get(test, False))
+        
+        print(f"\n🔧 API TESTS: {api_passed}/{len(api_tests)} passed")
+        
+        # Overall summary
+        total_passed = sum(1 for result in test_results.values() if result)
+        total_tests = len(test_results)
+        
+        print(f"\n📊 OVERALL RESULT: {total_passed}/{total_tests} tests passed")
+        
+        # Security issues summary
+        if self.security_issues:
+            print(f"\n🚨 SECURITY ISSUES FOUND ({len(self.security_issues)}):")
+            for issue in self.security_issues:
+                print(f"   • {issue}")
+        else:
+            print(f"\n🛡️  NO CRITICAL SECURITY ISSUES FOUND")
+        
+        if total_passed == total_tests and not self.security_issues:
+            print("\n🎉 ALL TESTS PASSED - SYSTEM IS SECURE AND FUNCTIONAL!")
             return True
         else:
-            print("⚠️  SOME TESTS FAILED!")
+            print(f"\n⚠️  ISSUES DETECTED - REVIEW REQUIRED")
             return False
 
 def main():
